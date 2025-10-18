@@ -105,15 +105,11 @@ void optimizeRoute(DoublyLinkedList *list)
   while (pivot->next != nullptr && pivot->next->next != nullptr)
   {
     double currentTraversalCost = calculateTraversalCost(pivot, pivot->next) + calculateTraversalCost(pivot->next, pivot->next->next);
-    list->swapAdjacentNodes(pivot, pivot->next);
-    double invertedTraversalCost = calculateTraversalCost(pivot->previous, pivot->previous->next) + calculateTraversalCost(pivot, pivot->next);
+    double invertedTraversalCost = calculateTraversalCost(pivot->next, pivot) + calculateTraversalCost(pivot, pivot->next->next);
 
-    if (currentTraversalCost <= invertedTraversalCost)
+    if (invertedTraversalCost < currentTraversalCost)
     {
-      list->swapAdjacentNodes(pivot->previous, pivot);
-    }
-    else
-    {
+      list->swapAdjacentNodes(pivot, pivot->next);
       routeChangeInIteration = true;
     }
 
