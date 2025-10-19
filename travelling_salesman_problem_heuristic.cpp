@@ -8,65 +8,41 @@ struct Node
   std::pair<int, int> value;
 };
 
-class DoublyLinkedList
+class CircularLinkedList
 {
 public:
   Node *head;
   Node *tail;
-
-  DoublyLinkedList()
-  {
-    Node *sentinelHeadNode = new Node();
-    Node *sentinelTailNode = new Node();
-
-    sentinelHeadNode->next = sentinelTailNode;
-    sentinelHeadNode->previous = nullptr;
-
-    sentinelTailNode->next = nullptr;
-    sentinelTailNode->previous = sentinelHeadNode;
-
-    this->head = sentinelHeadNode;
-    this->tail = sentinelTailNode;
-  }
+  int size = 0;
 
   void push(Node *node)
   {
-    if (this->tail->previous != nullptr)
+    if (this->size == 0)
     {
-      this->tail->previous->next = node;
+      this->head = node;
+      this->tail = node;
     }
-    node->previous = this->tail->previous;
-    this->tail->previous = node;
-    node->next = this->tail;
 
-    if (this->head->next == nullptr)
-    {
-      this->head->next = node;
-    }
+    this->tail->next = node;
+    node->previous = this->tail;
+    this->tail = node;
+    node->next = this->head;
+    size++;
   }
 
   void swapAdjacentNodes(Node *i, Node *j)
   {
-    Node *iPreviousTmp = i->previous;
-    Node *jNextTmp = j->next;
-
-    i->previous->next = j;
-    i->next = j->next;
-    i->previous = j;
-
-    j->previous = iPreviousTmp;
-    j->next = i;
-    jNextTmp->previous = i;
+    std::swap(i->value, j->value);
   }
 
   void traverse()
   {
-    Node *pivot = this->head->next;
-    while (pivot->next != nullptr)
+    Node *pivot = this->head;
+    do
     {
       std::cout << "(" << pivot->value.first << "," << pivot->value.second << ")\n";
       pivot = pivot->next;
-    }
+    } while (pivot != this->head);
   }
 };
 
@@ -85,36 +61,38 @@ double calculateTotalTravelCost(Node *head)
 {
   double travelCost = 0.00;
 
-  Node *pivot = head->next;
-  while (pivot->next != nullptr && pivot->next->next != nullptr)
+  Node *pivot = head;
+  do
   {
     travelCost += calculateTraversalCost(pivot, pivot->next);
     pivot = pivot->next;
-  }
-
-  // last node to first node
-  travelCost += calculateTraversalCost(pivot, head->next);
+  } while (pivot != head);
 
   return travelCost;
 }
 
-void optimizeRoute(DoublyLinkedList *list)
+void optimizeRoute(CircularLinkedList *list)
 {
-  Node *pivot = list->head->next;
+  Node *pivot = list->head;
   bool routeChangeInIteration = false;
-  while (pivot->next != nullptr && pivot->next->next != nullptr)
+  do
   {
-    double currentTraversalCost = calculateTraversalCost(pivot, pivot->next) + calculateTraversalCost(pivot->next, pivot->next->next);
-    double invertedTraversalCost = calculateTraversalCost(pivot->next, pivot) + calculateTraversalCost(pivot, pivot->next->next);
+    double currentTraversalCost = calculateTraversalCost(pivot->previous, pivot) + calculateTraversalCost(pivot, pivot->next) + calculateTraversalCost(pivot->next, pivot->next->next);
+    double invertedTraversalCost = calculateTraversalCost(pivot->previous, pivot->next) + calculateTraversalCost(pivot->next, pivot) + calculateTraversalCost(pivot, pivot->next->next);
+
+    // std::cout << "Traverse before swap" << '\n';
+    //  list->traverse();
 
     if (invertedTraversalCost < currentTraversalCost)
     {
       list->swapAdjacentNodes(pivot, pivot->next);
+      // std::cout << "Traverse after swap" << '\n';
+      // list->traverse();
       routeChangeInIteration = true;
     }
 
     pivot = pivot->next;
-  }
+  } while (pivot != list->head);
 
   if (routeChangeInIteration)
     optimizeRoute(list);
@@ -122,7 +100,23 @@ void optimizeRoute(DoublyLinkedList *list)
 
 int main()
 {
-  DoublyLinkedList list;
+  CircularLinkedList list;
+
+  // Node *node1 = new Node();
+  // node1->value = {1, 2};
+  // list.push(node1);
+
+  // Node *node2 = new Node();
+  // node2->value = {2, 2};
+  // list.push(node2);
+
+  // Node *node3 = new Node();
+  // node3->value = {3, 2};
+  // list.push(node3);
+
+  // list.traverse();
+  // list.swapAdjacentNodes(node1, node2);
+  // list.traverse();
 
   int x, y;
   std::cin >> x >> y;
