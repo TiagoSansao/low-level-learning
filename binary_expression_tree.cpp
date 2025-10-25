@@ -52,6 +52,24 @@ Node *buildTree(Node *root)
   return root;
 }
 
+void preOrder(Node *root)
+{
+  cout << root->value;
+  if (root->left)
+    preOrder(root->left);
+  if (root->right)
+    preOrder(root->right);
+}
+
+void posOrder(Node *root)
+{
+  if (root->left)
+    posOrder(root->left);
+  if (root->right)
+    posOrder(root->right);
+  cout << root->value;
+}
+
 int main()
 {
   string infixExpression;
@@ -61,6 +79,11 @@ int main()
   Node *root = new Node();
   root->value = infixExpression;
   buildTree(root);
+
+  preOrder(root);
+  cout << '\n';
+  posOrder(root);
+  cout << '\n';
 
   return 0;
 }
