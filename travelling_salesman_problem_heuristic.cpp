@@ -27,6 +27,7 @@ public:
     node->previous = this->tail;
     this->tail = node;
     node->next = this->head;
+    this->head->previous = node;
     size++;
   }
 
@@ -37,6 +38,7 @@ public:
 
   void traverse()
   {
+    std::cout << "----" << '\n';
     Node *pivot = this->head;
     do
     {
@@ -90,8 +92,11 @@ void optimizeRoute(CircularLinkedList *list)
       // list->traverse();
       routeChangeInIteration = true;
     }
+    else
+    {
+      pivot = pivot->next; // só mexer no pivot se n ter swap, pq se tiver, o pivot agora é o pivot->next
+    }
 
-    pivot = pivot->next;
   } while (pivot != list->head);
 
   if (routeChangeInIteration)
@@ -101,22 +106,6 @@ void optimizeRoute(CircularLinkedList *list)
 int main()
 {
   CircularLinkedList list;
-
-  // Node *node1 = new Node();
-  // node1->value = {1, 2};
-  // list.push(node1);
-
-  // Node *node2 = new Node();
-  // node2->value = {2, 2};
-  // list.push(node2);
-
-  // Node *node3 = new Node();
-  // node3->value = {3, 2};
-  // list.push(node3);
-
-  // list.traverse();
-  // list.swapAdjacentNodes(node1, node2);
-  // list.traverse();
 
   int x, y;
   std::cin >> x >> y;
